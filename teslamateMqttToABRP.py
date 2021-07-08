@@ -65,7 +65,7 @@ def on_message(client, userdata, message):
                 if(data["is_charging"]=="1" and int(payload)<-22):
                     data["is_dcfc"]="1"
             case "teslamate/cars/1/charger_power":
-                if(int(payload)!=0):
+                if(payload!='' and int(payload)!=0):
                     data["is_charging"]="1"
                     if(int(payload)>22):
                         data["is_dcfc"]="1"
@@ -80,12 +80,12 @@ def on_message(client, userdata, message):
             case "teslamate/cars/1/est_battery_range_km":
                 data["battery_range"] = payload
             case "teslamate/cars/1/charger_actual_current":
-                if(int(payload) > 0):#charging
+                if(payload!='' and int(payload) > 0):#charging
                     data["current"] = payload
                 else:
                     del data["current"]
             case "teslamate/cars/1/charger_voltage":
-                if(int(payload) > 0):
+                if(payload!='' and int(payload) > 0):
                     data["voltage"] = payload
                 else:
                     del data["voltage"]
@@ -125,9 +125,7 @@ def on_message(client, userdata, message):
         return
 
     except:
-        print("unexpected exception:", sys.exc_info()[0])
-        print(message.topic)
-        print(message.payload)
+        print("unexpected exception while processing message:", sys.exc_info()[0], message.topic, message.payload)
 
 #starts the MQTT loop processing messages
 client.on_message=on_message 
@@ -138,9 +136,14 @@ def updateABRP():
     global data
     global apikey
     global usertoken
-    headers = {"Authorization": "APIKEY "+apikey}
-    body = {"tlm": data}
-    requests.post("https://api.iternio.com/1/tlm/send?token="+usertoken, headers=headers, json=body)
+    try:
+        headers = {"Authorization": "APIKEY "+apikey}
+        body = {"tlm": data}
+        requests.post("https://api.iternio.com/1/tlm/send?token="+usertoken, headers=headers, json=body)
+    except:
+        print("unexpected exception while calling ABRP API:", sys.exc_info()[0])
+        print(message.topic)
+        print(message.payload)
 
 #starts the forever loop updating ABRP
 i = -1
