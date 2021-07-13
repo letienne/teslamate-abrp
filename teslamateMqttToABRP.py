@@ -43,7 +43,7 @@ client.connect(mqttserver)
 
 def on_connect(client, userdata, flags, rc):  # The callback for when the client connects to the broker
     print("Connected with result code {0}".format(str(rc)))  # Print result of connection attempt
-    client.subscribe("teslamate/cars/4/#")
+    client.subscribe(f"teslamate/cars/{carnumber}/#")
     #client.subscribe("digitest/test1")  # Subscribe to the topic “digitest/test1”, receive any messages published on it
 
 #process MQTT messages
@@ -55,52 +55,52 @@ def on_message(client, userdata, message):
         payload = str(message.payload.decode("utf-8"))
 
         #updates the received data
-        match message.topic:
-            case "teslamate/cars/4/plugged_in":
+        match message.topic.split('/')[-1]:
+            case "plugged_in":
                 a=1#noop
-            case "teslamate/cars/4/latitude":
+            case "latitude":
                 data["lat"] = payload
-            case "teslamate/cars/4/longitude":
+            case "longitude":
                 data["lon"] = payload
-            case "teslamate/cars/4/elevation":
+            case "elevation":
                 data["elevation"] = payload
-            case "teslamate/cars/4/speed":
+            case "speed":
                 data["speed"] = payload
-            case "teslamate/cars/4/power":
+            case "power":
                 data["power"] = payload
                 if(data["is_charging"]=="1" and int(payload)<-22):
                     data["is_dcfc"]="1"
-            case "teslamate/cars/4/charger_power":
+            case "charger_power":
                 if(payload!='' and int(payload)!=0):
                     data["is_charging"]="1"
                     if(int(payload)>22):
                         data["is_dcfc"]="1"
-            case "teslamate/cars/4/heading":
+            case "heading":
                 data["heading"] = payload
-            case "teslamate/cars/4/outside_temp":
+            case "outside_temp":
                 data["ext_temp"] = payload
-            case "teslamate/cars/4/odometer":
+            case "odometer":
                 data["odometer"] = payload
-            case "teslamate/cars/4/ideal_battery_range_km":
+            case "ideal_battery_range_km":
                 data["ideal_battery_range"] = payload
-            case "teslamate/cars/4/est_battery_range_km":
+            case "est_battery_range_km":
                 data["battery_range"] = payload
-            case "teslamate/cars/4/charger_actual_current":
+            case "charger_actual_current":
                 if(payload!='' and int(payload) > 0):#charging
                     data["current"] = payload
                 else:
                     del data["current"]
-            case "teslamate/cars/4/charger_voltage":
+            case "charger_voltage":
                 if(payload!='' and int(payload) > 0):
                     data["voltage"] = payload
                 else:
                     del data["voltage"]
-            case "teslamate/cars/4/shift_state":
+            case "shift_state":
                 if(payload == "P"):
                     data["is_parked"]="1"
                 elif(payload == "D" or payload == "R"):
                     data["is_parked"]="0"
-            case "teslamate/cars/4/state":
+            case "state":
                 state = payload
                 if(payload=="driving"):
                     data["is_parked"]="0"
@@ -118,13 +118,13 @@ def on_message(client, userdata, message):
                     data["is_parked"]="1"
                     data["is_charging"]="0"
                     data["is_dcfc"]="0"
-            case "teslamate/cars/4/battery_level":
+            case "battery_level":
                 data["soc"] = payload
-            case "teslamate/cars/4/charge_energy_added":
+            case "charge_energy_added":
                 data["kwh_charged"] = payload
-            case "teslamate/cars/4/inside_temp":
+            case "inside_temp":
                 a=0#noop
-            case "teslamate/cars/4/since":
+            case "since":
                 a=0#noop
             case _:
                 print("Unneeded topic:", message.topic, payload)
