@@ -18,24 +18,24 @@ carmodel = os.environ['CAR_MODEL']
 state = ""# car state
 prev_state = ""# car state previous loop for tracking
 data = {# dictionary of values sent to ABRP API
-  "utc": "",
-  "soc": "",
-  "power": "",
-  "speed": "",
+  "utc": 0,
+  "soc": 0,
+  "power": 0,
+  "speed": 0,
   "lat": "",
   "lon": "",
   "elevation": "",
-  "is_charging": "0",
-  "is_dcfc": "0",
-  "is_parked": "0",
+  "is_charging": 0,
+  "is_dcfc": 0,
+  "is_parked": 0,
   "battery_range": "",
   "ideal_battery_range": "",
   "ext_temp": "",
   "car_model":f"{carmodel}",
   "tlm_type": "api",
-  "voltage": "",
-  "current": "",
-  "kwh_charged": "",
+  "voltage": 0,
+  "current": 0,
+  "kwh_charged": 0,
   "heading": "",
 }
 
@@ -68,16 +68,16 @@ def on_message(client, userdata, message):
             case "elevation":
                 data["elevation"] = payload
             case "speed":
-                data["speed"] = payload
+                data["speed"] = int(payload)
             case "power":
-                data["power"] = payload
-                if(data["is_charging"]=="1" and int(payload)<-22):
-                    data["is_dcfc"]="1"
+                data["power"] = int(payload)
+                if(data["is_charging"]==1 and int(payload)<-22):
+                    data["is_dcfc"]=1
             case "charger_power":
                 if(payload!='' and int(payload)!=0):
-                    data["is_charging"]="1"
+                    data["is_charging"]=1
                     if(int(payload)>22):
-                        data["is_dcfc"]="1"
+                        data["is_dcfc"]=1
             case "heading":
                 data["heading"] = payload
             case "outside_temp":
@@ -106,21 +106,21 @@ def on_message(client, userdata, message):
             case "state":
                 state = payload
                 if(payload=="driving"):
-                    data["is_parked"]="0"
-                    data["is_charging"]="0"
-                    data["is_dcfc"]="0"
+                    data["is_parked"]=0
+                    data["is_charging"]=0
+                    data["is_dcfc"]=0
                 elif(payload=="charging"):
-                    data["is_parked"]="1"
-                    data["is_charging"]="1"
-                    data["is_dcfc"]="0"
+                    data["is_parked"]=1
+                    data["is_charging"]=1
+                    data["is_dcfc"]=0
                 elif(payload=="supercharging"):
-                    data["is_parked"]="1"
-                    data["is_charging"]="1"
-                    data["is_dcfc"]="1"
+                    data["is_parked"]=1
+                    data["is_charging"]=1
+                    data["is_dcfc"]=1
                 elif(payload=="online" or payload=="suspended" or payload=="asleep"):
-                    data["is_parked"]="1"
-                    data["is_charging"]="0"
-                    data["is_dcfc"]="0"
+                    data["is_parked"]=1
+                    data["is_charging"]=0
+                    data["is_dcfc"]=0
             case "battery_level":
                 data["soc"] = payload
             case "charge_energy_added":
@@ -168,6 +168,8 @@ while True:
     current_timetuple = current_datetime.utctimetuple()
     data["utc"] = calendar.timegm(current_timetuple)#utc timestamp must be in every messafge
     if(state == "parked" or state == "online" or state == "suspended" or state=="asleep"):#if parked update every 10min
+        if "kwh_charged" in data:
+            del data["kwh_charged"]
         if(i%120==0 or i>120):
             print("parked, updating every 10min")
             print(data)
