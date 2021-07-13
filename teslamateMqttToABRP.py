@@ -58,80 +58,80 @@ def on_message(client, userdata, message):
         payload = str(message.payload.decode("utf-8"))
 
         #updates the received data
-        match message.topic.split('/')[-1]:
-            case "plugged_in":
-                a=1#noop
-            case "latitude":
-                data["lat"] = payload
-            case "longitude":
-                data["lon"] = payload
-            case "elevation":
-                data["elevation"] = payload
-            case "speed":
-                data["speed"] = payload
-            case "power":
-                data["power"] = payload
-                if(data["is_charging"]=="1" and int(payload)<-22):
+        topic_postfix = message.topic.split('/')[-1]:        
+        if topic_postfix == "plugged_in":
+            a=1#noop
+        elif topic_postfix == "latitude":
+            data["lat"] = payload
+        elif topic_postfix == "longitude":
+            data["lon"] = payload
+        elif topic_postfix == "elevation":
+            data["elevation"] = payload
+        elif topic_postfix == "speed":
+            data["speed"] = payload
+        elif topic_postfix == "power":
+            data["power"] = payload
+            if(data["is_charging"]=="1" and int(payload)<-22):
+                data["is_dcfc"]="1"
+        elif topic_postfix == "charger_power":
+            if(payload!='' and int(payload)!=0):
+                data["is_charging"]="1"
+                if(int(payload)>22):
                     data["is_dcfc"]="1"
-            case "charger_power":
-                if(payload!='' and int(payload)!=0):
-                    data["is_charging"]="1"
-                    if(int(payload)>22):
-                        data["is_dcfc"]="1"
-            case "heading":
-                data["heading"] = payload
-            case "outside_temp":
-                data["ext_temp"] = payload
-            case "odometer":
-                data["odometer"] = payload
-            case "ideal_battery_range_km":
-                data["ideal_battery_range"] = payload
-            case "est_battery_range_km":
-                data["battery_range"] = payload
-            case "charger_actual_current":
-                if(payload!='' and int(payload) > 0):#charging
-                    data["current"] = payload
-                else:
-                    del data["current"]
-            case "charger_voltage":
-                if(payload!='' and int(payload) > 0):
-                    data["voltage"] = payload
-                else:
-                    del data["voltage"]
-            case "shift_state":
-                if(payload == "P"):
-                    data["is_parked"]="1"
-                elif(payload == "D" or payload == "R"):
-                    data["is_parked"]="0"
-            case "state":
-                state = payload
-                if(payload=="driving"):
-                    data["is_parked"]="0"
-                    data["is_charging"]="0"
-                    data["is_dcfc"]="0"
-                elif(payload=="charging"):
-                    data["is_parked"]="1"
-                    data["is_charging"]="1"
-                    data["is_dcfc"]="0"
-                elif(payload=="supercharging"):
-                    data["is_parked"]="1"
-                    data["is_charging"]="1"
-                    data["is_dcfc"]="1"
-                elif(payload=="online" or payload=="suspended" or payload=="asleep"):
-                    data["is_parked"]="1"
-                    data["is_charging"]="0"
-                    data["is_dcfc"]="0"
-            case "battery_level":
-                data["soc"] = payload
-            case "charge_energy_added":
-                data["kwh_charged"] = payload
-            case "inside_temp":
-                a=0#noop
-            case "since":
-                a=0#noop
-            case _:
-                pass
-                #print("Unneeded topic:", message.topic, payload)
+        elif topic_postfix == "heading":
+            data["heading"] = payload
+        elif topic_postfix == "outside_temp":
+            data["ext_temp"] = payload
+        elif topic_postfix == "odometer":
+            data["odometer"] = payload
+        elif topic_postfix == "ideal_battery_range_km":
+            data["ideal_battery_range"] = payload
+        elif topic_postfix == "est_battery_range_km":
+            data["battery_range"] = payload
+        elif topic_postfix == "charger_actual_current":
+            if(payload!='' and int(payload) > 0):#charging
+                data["current"] = payload
+            else:
+                del data["current"]
+        elif topic_postfix == "charger_voltage":
+            if(payload!='' and int(payload) > 0):
+                data["voltage"] = payload
+            else:
+                del data["voltage"]
+        elif topic_postfix == "shift_state":
+            if(payload == "P"):
+                data["is_parked"]="1"
+            elif(payload == "D" or payload == "R"):
+                data["is_parked"]="0"
+        elif topic_postfix == "state":
+            state = payload
+            if(payload=="driving"):
+                data["is_parked"]="0"
+                data["is_charging"]="0"
+                data["is_dcfc"]="0"
+            elif(payload=="charging"):
+                data["is_parked"]="1"
+                data["is_charging"]="1"
+                data["is_dcfc"]="0"
+            elif(payload=="supercharging"):
+                data["is_parked"]="1"
+                data["is_charging"]="1"
+                data["is_dcfc"]="1"
+            elif(payload=="online" or payload=="suspended" or payload=="asleep"):
+                data["is_parked"]="1"
+                data["is_charging"]="0"
+                data["is_dcfc"]="0"
+        elif topic_postfix == "battery_level":
+            data["soc"] = payload
+        elif topic_postfix == "charge_energy_added":
+            data["kwh_charged"] = payload
+        elif topic_postfix == "inside_temp":
+            a=0#noop
+        elif topic_postfix == "since":
+            a=0#noop
+        elif topic_postfix == _:
+            pass
+            #print("Unneeded topic:", message.topic, payload)
         return
 
     except:
