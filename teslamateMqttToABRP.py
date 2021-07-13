@@ -38,12 +38,12 @@ data = {# dictionary of values sent to ABRP API
 
 
 #initiate MQTT client
-client = mqtt.Client("teslamateToABRP-" + carnumber + "")
+client = mqtt.Client("teslamateToABRP-{carnumber}")
 client.connect(mqttserver)
 
 def on_connect(client, userdata, flags, rc):  # The callback for when the client connects to the broker
     print("Connected with result code {0}".format(str(rc)))  # Print result of connection attempt
-    client.subscribe("teslamate/cars/" + carnumber + "/#")
+    client.subscribe("teslamate/cars/{carnumber}/#")
     #client.subscribe("digitest/test1")  # Subscribe to the topic “digitest/test1”, receive any messages published on it
 
 #process MQTT messages
@@ -56,51 +56,51 @@ def on_message(client, userdata, message):
 
         #updates the received data
         match message.topic:
-            case "teslamate/cars/" + carnumber + "/plugged_in":
+            case "teslamate/cars/{carnumber}/plugged_in":
                 a=1#noop
-            case "teslamate/cars/" + carnumber + "/latitude":
+            case "teslamate/cars/{carnumber}/latitude":
                 data["lat"] = payload
-            case "teslamate/cars/" + carnumber + "/longitude":
+            case "teslamate/cars/{carnumber}/longitude":
                 data["lon"] = payload
-            case "teslamate/cars/" + carnumber + "/elevation":
+            case "teslamate/cars/{carnumber}/elevation":
                 data["elevation"] = payload
-            case "teslamate/cars/" + carnumber + "/speed":
+            case "teslamate/cars/{carnumber}/speed":
                 data["speed"] = payload
-            case "teslamate/cars/" + carnumber + "/power":
+            case "teslamate/cars/{carnumber}/power":
                 data["power"] = payload
                 if(data["is_charging"]=="1" and int(payload)<-22):
                     data["is_dcfc"]="1"
-            case "teslamate/cars/" + carnumber + "/charger_power":
+            case "teslamate/cars/{carnumber}/charger_power":
                 if(payload!='' and int(payload)!=0):
                     data["is_charging"]="1"
                     if(int(payload)>22):
                         data["is_dcfc"]="1"
-            case "teslamate/cars/" + carnumber + "/heading":
+            case "teslamate/cars/{carnumber}/heading":
                 data["heading"] = payload
-            case "teslamate/cars/" + carnumber + "/outside_temp":
+            case "teslamate/cars/{carnumber}/outside_temp":
                 data["ext_temp"] = payload
-            case "teslamate/cars/" + carnumber + "/odometer":
+            case "teslamate/cars/{carnumber}/odometer":
                 data["odometer"] = payload
-            case "teslamate/cars/" + carnumber + "/ideal_battery_range_km":
+            case "teslamate/cars/{carnumber}/ideal_battery_range_km":
                 data["ideal_battery_range"] = payload
-            case "teslamate/cars/" + carnumber + "/est_battery_range_km":
+            case "teslamate/cars/{carnumber}/est_battery_range_km":
                 data["battery_range"] = payload
-            case "teslamate/cars/" + carnumber + "/charger_actual_current":
+            case "teslamate/cars/{carnumber}/charger_actual_current":
                 if(payload!='' and int(payload) > 0):#charging
                     data["current"] = payload
                 else:
                     del data["current"]
-            case "teslamate/cars/" + carnumber + "/charger_voltage":
+            case "teslamate/cars/{carnumber}/charger_voltage":
                 if(payload!='' and int(payload) > 0):
                     data["voltage"] = payload
                 else:
                     del data["voltage"]
-            case "teslamate/cars/" + carnumber + "/shift_state":
+            case "teslamate/cars/{carnumber}/shift_state":
                 if(payload == "P"):
                     data["is_parked"]="1"
                 elif(payload == "D" or payload == "R"):
                     data["is_parked"]="0"
-            case "teslamate/cars/" + carnumber + "/state":
+            case "teslamate/cars/{carnumber}/state":
                 state = payload
                 if(payload=="driving"):
                     data["is_parked"]="0"
@@ -118,13 +118,13 @@ def on_message(client, userdata, message):
                     data["is_parked"]="1"
                     data["is_charging"]="0"
                     data["is_dcfc"]="0"
-            case "teslamate/cars/" + carnumber + "/battery_level":
+            case "teslamate/cars/{carnumber}/battery_level":
                 data["soc"] = payload
-            case "teslamate/cars/" + carnumber + "/charge_energy_added":
+            case "teslamate/cars/{carnumber}/charge_energy_added":
                 data["kwh_charged"] = payload
-            case "teslamate/cars/" + carnumber + "/inside_temp":
+            case "teslamate/cars/{carnumber}/inside_temp":
                 a=0#noop
-            case "teslamate/cars/" + carnumber + "/since":
+            case "teslamate/cars/{carnumber}/since":
                 a=0#noop
             case _:
                 print("Unneeded topic:", message.topic, payload)
@@ -134,7 +134,7 @@ def on_message(client, userdata, message):
         print("unexpected exception while processing message:", sys.exc_info()[0], message.topic, message.payload)
 
 #starts the MQTT loop processing messages
-client.on_message = on_message
+client.on_message = on_message 
 client.on_connect = on_connect  # Define callback function for successful connection
 client.loop_start()
 
