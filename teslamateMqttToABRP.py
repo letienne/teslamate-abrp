@@ -11,6 +11,7 @@ apikey = os.environ['API_KEY']
 mqttserver = os.environ['MQTT_SERVER']
 usertoken = os.environ['USER_TOKEN']
 carnumber = os.environ['CAR_NUMBER']
+carmodel = os.environ['CAR_MODEL']
 
 state = ""# car state
 prev_state = ""# car state previous loop for tracking
@@ -28,7 +29,7 @@ data = {# dictionary of values sent to ABRP API
   "battery_range": "",
   "ideal_battery_range": "",
   "ext_temp": "",
-  "car_model":"s85d",
+  "car_model":f"{carmodel}",
   "tlm_type": "api",
   "voltage": "",
   "current": "",
