@@ -58,7 +58,7 @@ def on_message(client, userdata, message):
         payload = str(message.payload.decode("utf-8"))
 
         #updates the received data
-        topic_postfix = message.topic.split('/')[-1]:        
+        topic_postfix = message.topic.split('/')[-1]
         if topic_postfix == "plugged_in":
             a=1#noop
         elif topic_postfix == "latitude":
