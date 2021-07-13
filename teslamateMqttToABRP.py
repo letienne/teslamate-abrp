@@ -38,7 +38,7 @@ data = {# dictionary of values sent to ABRP API
 
 
 #initiate MQTT client
-client = mqtt.Client("teslamateToABRP4")
+client = mqtt.Client("teslamateToABRP-{carnumber}")
 client.connect(mqttserver)
 
 def on_connect(client, userdata, flags, rc):  # The callback for when the client connects to the broker
