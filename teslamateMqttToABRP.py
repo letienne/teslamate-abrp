@@ -127,7 +127,8 @@ def on_message(client, userdata, message):
             case "since":
                 a=0#noop
             case _:
-                print("Unneeded topic:", message.topic, payload)
+                pass
+                #print("Unneeded topic:", message.topic, payload)
         return
 
     except:
@@ -157,7 +158,7 @@ i = -1
 while True:
     i+=1
     sleep(5)#refresh rate of min 5 seconds
-    print(state)
+    #print(state)
     if state != prev_state:
         i = 120
     current_datetime = datetime.datetime.utcnow()
