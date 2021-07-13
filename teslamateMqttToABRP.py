@@ -94,7 +94,7 @@ def on_message(client, userdata, message):
                 else:
                     del data["current"]
             case "charger_voltage":
-                if(payload!='' and int(payload) > 0):
+                if(payload!='' and int(payload) > 5):
                     data["voltage"] = payload
                 else:
                     del data["voltage"]
