@@ -11,7 +11,9 @@ apikey = os.environ['API_KEY']
 mqttserver = os.environ['MQTT_SERVER']
 usertoken = os.environ['USER_TOKEN']
 carnumber = os.environ['CAR_NUMBER']
+#car model list here curl --location --request GET 'https://api.iternio.com/1/tlm/get_carmodels_list'
 carmodel = os.environ['CAR_MODEL']
+
 
 state = ""# car state
 prev_state = ""# car state previous loop for tracking
