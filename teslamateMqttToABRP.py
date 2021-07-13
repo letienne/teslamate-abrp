@@ -129,12 +129,12 @@ def on_message(client, userdata, message):
             a=0#noop
         elif topic_postfix == "since":
             a=0#noop
-        elif topic_postfix == _:
+        else:
             pass
             #print("Unneeded topic:", message.topic, payload)
         return
 
-    except:
+    except:        
         print("unexpected exception while processing message:", sys.exc_info()[0], message.topic, message.payload)
 
 #starts the MQTT loop processing messages
