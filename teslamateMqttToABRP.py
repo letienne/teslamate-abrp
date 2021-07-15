@@ -10,6 +10,10 @@ from time import sleep
 apikey = os.environ['API_KEY']
 mqttserver = os.environ['MQTT_SERVER']
 usertoken = os.environ['USER_TOKEN']
+carid = os.environ['CAR_ID']
+
+if(carid is None):
+    carid="1"
 
 state = ""# car state
 data = {# dictionary of values sent to ABRP API
@@ -38,7 +42,7 @@ data = {# dictionary of values sent to ABRP API
 #initiate MQTT client
 client = mqtt.Client("teslamateToABRP")
 client.connect(mqttserver)
-client.subscribe("teslamate/cars/1/#")
+client.subscribe("teslamate/cars/"+carid+"/#")
 
 #process MQTT messages
 def on_message(client, userdata, message):
@@ -50,51 +54,51 @@ def on_message(client, userdata, message):
 
         #updates the received data
         match message.topic:
-            case "teslamate/cars/1/plugged_in":
+            case "teslamate/cars/"+carid+"/plugged_in":
                 a=1#noop
-            case "teslamate/cars/1/latitude":
+            case "teslamate/cars/"+carid+"/latitude":
                 data["lat"] = payload
-            case "teslamate/cars/1/longitude":
+            case "teslamate/cars/"+carid+"/longitude":
                 data["lon"] = payload
-            case "teslamate/cars/1/elevation":
+            case "teslamate/cars/"+carid+"/elevation":
                 data["elevation"] = payload
-            case "teslamate/cars/1/speed":
+            case "teslamate/cars/"+carid+"/speed":
                 data["speed"] = payload
-            case "teslamate/cars/1/power":
+            case "teslamate/cars/"+carid+"/power":
                 data["power"] = payload
                 if(data["is_charging"]=="1" and int(payload)<-22):
                     data["is_dcfc"]="1"
-            case "teslamate/cars/1/charger_power":
+            case "teslamate/cars/"+carid+"/charger_power":
                 if(payload!='' and int(payload)!=0):
                     data["is_charging"]="1"
                     if(int(payload)>22):
                         data["is_dcfc"]="1"
-            case "teslamate/cars/1/heading":
+            case "teslamate/cars/"+carid+"/heading":
                 data["heading"] = payload
-            case "teslamate/cars/1/outside_temp":
+            case "teslamate/cars/"+carid+"/outside_temp":
                 data["ext_temp"] = payload
-            case "teslamate/cars/1/odometer":
+            case "teslamate/cars/"+carid+"/odometer":
                 data["odometer"] = payload
-            case "teslamate/cars/1/ideal_battery_range_km":
+            case "teslamate/cars/"+carid+"/ideal_battery_range_km":
                 data["ideal_battery_range"] = payload
-            case "teslamate/cars/1/est_battery_range_km":
+            case "teslamate/cars/"+carid+"/est_battery_range_km":
                 data["battery_range"] = payload
-            case "teslamate/cars/1/charger_actual_current":
+            case "teslamate/cars/"+carid+"/charger_actual_current":
                 if(payload!='' and int(payload) > 0):#charging
                     data["current"] = payload
                 else:
                     del data["current"]
-            case "teslamate/cars/1/charger_voltage":
+            case "teslamate/cars/"+carid+"/charger_voltage":
                 if(payload!='' and int(payload) > 0):
                     data["voltage"] = payload
                 else:
                     del data["voltage"]
-            case "teslamate/cars/1/shift_state":
+            case "teslamate/cars/"+carid+"/shift_state":
                 if(payload == "P"):
                     data["is_parked"]="1"
                 elif(payload == "D" or payload == "R"):
                     data["is_parked"]="0"
-            case "teslamate/cars/1/state":
+            case "teslamate/cars/"+carid+"/state":
                 state = payload
                 if(payload=="driving"):
                     data["is_parked"]="0"
@@ -112,13 +116,13 @@ def on_message(client, userdata, message):
                     data["is_parked"]="1"
                     data["is_charging"]="0"
                     data["is_dcfc"]="0"
-            case "teslamate/cars/1/battery_level":
+            case "teslamate/cars/"+carid+"/battery_level":
                 data["soc"] = payload
-            case "teslamate/cars/1/charge_energy_added":
+            case "teslamate/cars/"+carid+"/charge_energy_added":
                 data["kwh_charged"] = payload
-            case "teslamate/cars/1/inside_temp":
+            case "teslamate/cars/"+carid+"/inside_temp":
                 a=0#noop
-            case "teslamate/cars/1/since":
+            case "teslamate/cars/"+carid+"/since":
                 a=0#noop
             case _:
                 print("Unneeded topic:", message.topic, payload)
