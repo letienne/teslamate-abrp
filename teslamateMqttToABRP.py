@@ -9,6 +9,8 @@ from time import sleep
 
 apikey = os.environ['API_KEY']
 mqttserver = os.environ['MQTT_SERVER']
+mqttusername = os.environ['MQTT_USERNAME']
+mqttpassword = os.environ['MQTT_PASSWORD']
 usertoken = os.environ['USER_TOKEN']
 carnumber = os.environ['CAR_NUMBER']
 #car model list here curl --location --request GET 'https://api.iternio.com/1/tlm/get_carmodels_list'
@@ -42,6 +44,12 @@ data = {# dictionary of values sent to ABRP API
 
 #initiate MQTT client
 client = mqtt.Client(f"teslamateToABRP-{carnumber}")
+if mqttusername is not None:
+    if mqttpassword is not None:
+        client.username_pw_set(mqttusername, mqttpassword)
+    else:
+        client.username_pw_set(mqttusername)
+
 client.connect(mqttserver)
 
 def on_connect(client, userdata, flags, rc):  # The callback for when the client connects to the broker
@@ -168,7 +176,7 @@ while True:
     current_datetime = datetime.datetime.utcnow()
     current_timetuple = current_datetime.utctimetuple()
     data["utc"] = calendar.timegm(current_timetuple)#utc timestamp must be in every messafge
-    if(state == "parked" or state == "online" or state == "suspended" or state=="asleep"):#if parked update every 10min
+    if(state == "parked" or state == "online" or state == "suspended" or state=="asleep" or state=="offline"):#if parked update every 10min
         if "kwh_charged" in data:
             del data["kwh_charged"]
         if(i%120==0 or i>120):
