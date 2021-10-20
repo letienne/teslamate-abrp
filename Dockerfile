@@ -1,4 +1,4 @@
-FROM amd64/python:3.10-rc-alpine
+FROM python:3.10-rc-alpine
 
 WORKDIR /volume1/docker/temp
 
