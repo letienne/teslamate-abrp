@@ -1,25 +1,27 @@
-import paho.mqtt.client as mqtt
-import requests
+## [ IMPORTS ]
 import sys
-import json
+import json #TODO/TODELETE: Needed?
 import datetime
 import calendar
 import os
 from time import sleep
+import paho.mqtt.client as mqtt
+import requests
 
-apikey = os.environ['API_KEY']
-mqttserver = os.environ['MQTT_SERVER']
-mqttusername = os.environ['MQTT_USERNAME']
-mqttpassword = os.environ['MQTT_PASSWORD']
-usertoken = os.environ['USER_TOKEN']
-carnumber = os.environ['CAR_NUMBER']
-#car model list here curl --location --request GET 'https://api.iternio.com/1/tlm/get_carmodels_list'
-carmodel = os.environ['CAR_MODEL']
+## [ CONFIGURATION ]
+APIKEY = os.environ['API_KEY'] #TODO: ask ABRP/Iternio for an "official" API key
+MQTTSERVER = os.environ['MQTT_SERVER']
+MQTTUSERNAME = os.environ['MQTT_USERNAME']
+MQTTPASSWORD = os.environ['MQTT_PASSWORD']
+USERTOKEN = os.environ['USER_TOKEN']
+CARNUMBER = os.environ['CAR_NUMBER']
+#car model list here curl --location --request GET 'https://api.iternio.com/1/tlm/get_CARMODELs_list'
+CARMODEL = os.environ['CAR_MODEL'] #TODO: is there a way to find this automatically from TeslaMate?
 
-
-state = ""# car state
-prev_state = ""# car state previous loop for tracking
-data = {# dictionary of values sent to ABRP API
+## [ VARS ]
+state = "" #car state
+prev_state = "" #car state previous loop for tracking
+data = { #dictionary of values sent to ABRP API
   "utc": 0,
   "soc": 0,
   "power": 0,
@@ -33,7 +35,7 @@ data = {# dictionary of values sent to ABRP API
   "battery_range": "",
   "ideal_battery_range": "",
   "ext_temp": "",
-  "car_model":f"{carmodel}",
+  "car_model":f"{CARMODEL}",
   "tlm_type": "api",
   "voltage": 0,
   "current": 0,
@@ -41,23 +43,22 @@ data = {# dictionary of values sent to ABRP API
   "heading": "",
 }
 
-
-#initiate MQTT client
-client = mqtt.Client(f"teslamateToABRP-{carnumber}")
-if mqttusername is not None:
-    if mqttpassword is not None:
-        client.username_pw_set(mqttusername, mqttpassword)
+## [ MQTT ]
+# Initialize MQTT client and connect
+client = mqtt.Client(f"teslamateToABRP-{CARNUMBER}")
+if MQTTUSERNAME is not None:
+    if MQTTPASSWORD is not None:
+        client.username_pw_set(MQTTUSERNAME, MQTTPASSWORD)
     else:
-        client.username_pw_set(mqttusername)
+        client.username_pw_set(MQTTUSERNAME)
 
-client.connect(mqttserver)
+client.connect(MQTTSERVER)
 
 def on_connect(client, userdata, flags, rc):  # The callback for when the client connects to the broker
     print("Connected with result code {0}".format(str(rc)))  # Print result of connection attempt
-    client.subscribe(f"teslamate/cars/{carnumber}/#")
-    #client.subscribe("digitest/test1")  # Subscribe to the topic “digitest/test1”, receive any messages published on it
+    client.subscribe(f"teslamate/cars/{CARNUMBER}/#")
 
-#process MQTT messages
+# Process MQTT messages
 def on_message(client, userdata, message):
     global data
     global state
@@ -67,7 +68,7 @@ def on_message(client, userdata, message):
 
         #updates the received data
         topic_postfix = message.topic.split('/')[-1]
-        
+
         if topic_postfix == "plugged_in":
             a=1#noop
         elif topic_postfix == "latitude":
@@ -85,7 +86,7 @@ def on_message(client, userdata, message):
         elif topic_postfix == "charger_power":
             if(payload!='' and int(payload)!=0):
                 data["is_charging"]=1
-                if(int(payload)>22):
+                if int(payload)>22:
                     data["is_dcfc"]=1
         elif topic_postfix == "heading":
             data["heading"] = payload
@@ -108,21 +109,21 @@ def on_message(client, userdata, message):
             else:
                 del data["voltage"]
         elif topic_postfix == "shift_state":
-            if(payload == "P"):
+            if payload == "P":
                 data["is_parked"]="1"
             elif(payload == "D" or payload == "R"):
                 data["is_parked"]="0"
         elif topic_postfix == "state":
             state = payload
-            if(payload=="driving"):
+            if payload=="driving":
                 data["is_parked"]=0
                 data["is_charging"]=0
                 data["is_dcfc"]=0
-            elif(payload=="charging"):
+            elif payload=="charging":
                 data["is_parked"]=1
                 data["is_charging"]=1
                 data["is_dcfc"]=0
-            elif(payload=="supercharging"):
+            elif payload=="supercharging":
                 data["is_parked"]=1
                 data["is_charging"]=1
                 data["is_dcfc"]=1
@@ -143,29 +144,31 @@ def on_message(client, userdata, message):
             #print("Unneeded topic:", message.topic, payload)
         return
 
-    except:        
+    except:
         print("unexpected exception while processing message:", sys.exc_info()[0], message.topic, message.payload)
 
-#starts the MQTT loop processing messages
+# Starts the MQTT loop processing messages
 client.on_message = on_message
 client.on_connect = on_connect  # Define callback function for successful connection
 client.loop_start()
 
-#function to send data to ABRP
+## [ ABRP ]
+# Function to send data to ABRP
 def updateABRP():
     global data
-    global apikey
-    global usertoken
+    global APIKEY
+    global USERTOKEN
     try:
-        headers = {"Authorization": "APIKEY "+apikey}
+        headers = {"Authorization": "APIKEY "+APIKEY}
         body = {"tlm": data}
-        requests.post("https://api.iternio.com/1/tlm/send?token="+usertoken, headers=headers, json=body)
+        requests.post("https://api.iternio.com/1/tlm/send?token="+USERTOKEN, headers=headers, json=body)
     except:
-        print("unexpected exception while calling ABRP API:", sys.exc_info()[0])
+        print("Unexpected exception while calling ABRP API:", sys.exc_info()[0])
         print(message.topic)
         print(message.payload)
 
-#starts the forever loop updating ABRP
+## [ Main ]
+# Starts the forever loop updating ABRP
 i = -1
 while True:
     i+=1
@@ -175,7 +178,7 @@ while True:
         i = 120
     current_datetime = datetime.datetime.utcnow()
     current_timetuple = current_datetime.utctimetuple()
-    data["utc"] = calendar.timegm(current_timetuple)#utc timestamp must be in every messafge
+    data["utc"] = calendar.timegm(current_timetuple)#utc timestamp must be in every message
     if(state == "parked" or state == "online" or state == "suspended" or state=="asleep" or state=="offline"):#if parked update every 10min
         if "kwh_charged" in data:
             del data["kwh_charged"]
@@ -184,12 +187,12 @@ while True:
             print(data)
             updateABRP()
             i = 0
-    elif(state == "charging"):
-        if(i%6==0):
+    elif state == "charging":
+        if i%6==0:
             print("charging, updating every 30s")
             print(data)
             updateABRP()
-    elif(state == "driving"):
+    elif state == "driving":
         print("driving, updating every 5s")
         print(data)
         updateABRP()

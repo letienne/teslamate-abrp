@@ -1,2 +1,2 @@
-paho-mqtt
-requests
+requests==2.26.0
+paho-mqtt==1.6.1
