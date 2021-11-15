@@ -1,4 +1,3 @@
-vi build.yml
 name: Publish DockerHub image
 
 on:
