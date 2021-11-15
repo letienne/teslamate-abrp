@@ -1,10 +1,42 @@
 # TeslaMate: MQTT to ABRP
 
 ## Use as Docker container
-*TODO*
+### Requirements
+For this to work, you need a working instance of TeslaMate with MQTT enabled. See the [official TeslaMate doc](https://docs.teslamate.org/docs/installation/docker) as a reference on how this might look like.
+
+### Getting a ABRP APIKEY and USER TOKEN
+*TODO: Pending response from Bo*
+
+### Adding the service to docker-compose.yml
+Once the APIKEY and USER TOKEN are secured, you can add the teslamate-abrp service to your TeslaMate docker-compose.yml  
+
+- The first value MQTT_SERVER corresponds to the name of your MQTT service name ("mosquitto" in the doc).  
+- The second and third values (API_KEY and USER_TOKEN) correspond to the values provided by ABRP.
+- The fourth value corresponds to your car number (1 if you only have a single car).
+- The last value corresponds to your car model; you need to find your car model on https://api.iternio.com/1/tlm/get_carmodels_list. Use the corresponding key as a value for CAR_MODEL (e.g. "s100d" for a 2012-2018 S100D).
+  
+```
+  ABRP:
+    container_name: TeslaMate_ABRP
+    image: fetzu/teslamate-abrp:latest
+    environment:
+      - MQTT_SERVER=mosquitto
+      - API_KEY=a2c
+      - USER_TOKEN=d4e
+      - CAR_NUMBER=1
+      - CAR_MODEL=s100d
+```
+  
+Then from the command line, navigate to the folder where your docker-compose.yml is located and run:
+```
+docker-compose pull ABRP
+docker-compose up ABRP -d
+```
+  
+If all goes well, your car should be shown as online in ABRP after a minute. The logs should  show "Connected with result code 0".
 
 ## Use as python script
-The script can also be run directly on a machine with Python 3.x. Please note that the machine needs to have access to your MQTT server on port 1883.
+The script can also be run directly on a machine with Python 3.x. Please note that the machine needs to have access to your MQTT server on port 1883. **NOTE: If you wish to use the python script, you will have to hard-code the APIKEY constant on line 41. The official API key is still pending.**
 
 ### Installing requirements
 To install the requirements, run
