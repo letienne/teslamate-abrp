@@ -39,6 +39,7 @@ if __name__ == '__main__':
 
 ## [ CONFIGURATION ]
 APIKEY = os.environ['API_KEY'] #TODO: hardcode ABRP/Iternio provided API key here.
+MQTTUSERNAME = None
 MQTTPASSWORD = None
 
 if arguments['-l'] is True:
