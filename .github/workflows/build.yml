@@ -26,8 +26,6 @@ jobs:
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v3
-        with:
-          images: itsmetommy/hello-github-actions
 
       - name: Build and push
         uses: docker/build-push-action@v2
