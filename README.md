@@ -14,6 +14,7 @@ Once the APIKEY and USER TOKEN are secured, you can add the teslamate-abrp servi
 - The second and third values (API_KEY and USER_TOKEN) correspond to the values provided by ABRP.
 - The fourth value corresponds to your car number (1 if you only have a single car).
 - The last value corresponds to your car model; you need to find your car model on https://api.iternio.com/1/tlm/get_carmodels_list. Use the corresponding key as a value for CAR_MODEL (e.g. "s100d" for a 2012-2018 S100D).
+- Additionally, MQTT_PASSWORD and/or MQTT_USERNAME can be set to use authentication on the MQTT server.
   
 ```
   ABRP:
