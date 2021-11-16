@@ -38,7 +38,7 @@ if __name__ == '__main__':
     arguments = docopt(__doc__)
 
 ## [ CONFIGURATION ]
-APIKEY = os.environ['API_KEY'] #TODO: hardcode ABRP/Iternio provided API key here.
+APIKEY = "d49234a5-2553-454e-8321-3fe30b49aa64"
 MQTTUSERNAME = None
 MQTTPASSWORD = None
 
