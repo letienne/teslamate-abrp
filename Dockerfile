@@ -1,10 +1,10 @@
-FROM python:3.10-rc-alpine
+FROM python:3.10-alpine
 
-WORKDIR /volume1/docker/temp
+WORKDIR /usr/src/teslamate-abrp
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "-u", "./teslamateMqttToABRP.py" ]
+CMD [ "python", "-u", "./teslamate_mqtt2abrp.py" ]
