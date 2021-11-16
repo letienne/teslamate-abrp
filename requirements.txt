@@ -1,2 +1,3 @@
-paho-mqtt
-requests
+docopt==0.6.2
+requests==2.26.0
+paho-mqtt==1.6.1
