@@ -20,7 +20,7 @@ In your TeslaMate docker-compose.yml, add the teslamate-abrp service by adding t
       - CAR_MODEL=s100d
 ```
   
-Make sure to adapt the following lines:
+Make sure to adapt the following environment varibles:
 - The first value MQTT_SERVER corresponds to the name of your MQTT service name ("mosquitto" in the doc).  
 - The second values (USER_TOKEN) correspond to the value provided by ABRP.
 - The third value corresponds to your car number (1 if you only have a single car).
