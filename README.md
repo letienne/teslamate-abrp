@@ -8,24 +8,24 @@ For this to work, you need a working instance of TeslaMate with MQTT enabled. Se
 Inside the ABRP (web)app, navigate to your car settings and use the "generic" card (last one at the very bottom) to generate your user token. Make a note of that token and keep it to yourself.
 
 ### Adding the service to docker-compose.yml
-Once the APIKEY and USER TOKEN are secured, you can add the teslamate-abrp service to your TeslaMate docker-compose.yml  
-
-- The first value MQTT_SERVER corresponds to the name of your MQTT service name ("mosquitto" in the doc).  
-- The second values (USER_TOKEN) correspond to the value provided by ABRP.
-- The third value corresponds to your car number (1 if you only have a single car).
-- The last value corresponds to your car model; you need to find your car model on https://api.iternio.com/1/tlm/get_carmodels_list. Use the corresponding key as a value for CAR_MODEL (e.g. "s100d" for a 2012-2018 S100D).
-- Additionally, MQTT_PASSWORD and/or MQTT_USERNAME can be set to use authentication on the MQTT server.
-  
+In your TeslaMate docker-compose.yml, add the teslamate-abrp service by adding the following lines in the "services:" section:
 ```
   ABRP:
     container_name: TeslaMate_ABRP
     image: fetzu/teslamate-abrp:latest
     environment:
       - MQTT_SERVER=mosquitto
-      - USER_TOKEN=y0ur4p1k3y
+      - USER_TOKEN=y0ur-4p1-k3y
       - CAR_NUMBER=1
       - CAR_MODEL=s100d
 ```
+  
+Make sure to adapt the following lines:
+- The first value MQTT_SERVER corresponds to the name of your MQTT service name ("mosquitto" in the doc).  
+- The second values (USER_TOKEN) correspond to the value provided by ABRP.
+- The third value corresponds to your car number (1 if you only have a single car).
+- The last value corresponds to your car model; you need to find your car model on https://api.iternio.com/1/tlm/get_carmodels_list. Use the corresponding key as a value for CAR_MODEL (e.g. "s100d" for a 2012-2018 S100D).
+- Additionally, MQTT_PASSWORD and/or MQTT_USERNAME can be set to use authentication on the MQTT server.
   
 Then from the command line, navigate to the folder where your docker-compose.yml is located and run:
 ```
