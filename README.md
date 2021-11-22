@@ -62,6 +62,7 @@ If you are using a MQTT server with username or authentication, pass the -l (to 
     MQTT_SERVER         MQTT server address (e.g. "192.168.1.1").
     MQTT_USERNAME       MQTT username (e.g. "teslamate") - use with -l or -a.
     MQTT_PASSWORD       MQTT password (e.g. "etamalset") - use with -a.
+  
   Options:
     -h                  Show this screen.
     -l                  Use username to connect to MQTT server.
