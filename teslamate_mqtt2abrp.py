@@ -228,7 +228,7 @@ def findCarModel():
         print("Unfortunately, Model Y is not supported yet and should be set through the CLI or environment var.")
 
     # Handle simple cases (aka Model S and Model X)
-    else: data["car_model"] = data["model"]+""+data["trim_badging"]
+    else: data["car_model"] = data["model"].lower()+""+data["trim_badging"].lower()
 
     # Log the determined car model to the console
     print("Car model automatically determined as: "+data["car_model"])
