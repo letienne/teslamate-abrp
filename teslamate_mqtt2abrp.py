@@ -24,7 +24,6 @@ TeslaMate MQTT to ABRP
 
 ## [ IMPORTS ]
 import sys
-import json #TODO/TODELETE: Needed?
 import datetime
 import calendar
 import os
