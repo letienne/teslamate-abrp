@@ -1,4 +1,4 @@
-name: CI and push to DockerHub (amd64+arm64)
+name: amd64+arm64 build
 
 on:
   push:
