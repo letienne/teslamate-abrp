@@ -1,4 +1,5 @@
-name: amd64+arm64 build
+# Build for amd64 and arm64 and publish to DockerHub
+name: build
 
 on:
   push:
