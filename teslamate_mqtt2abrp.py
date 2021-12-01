@@ -154,14 +154,16 @@ def on_message(client, userdata, message):
         elif topic_postfix == "est_battery_range_km":
             data["battery_range"] = payload
         elif topic_postfix == "charger_actual_current":
-            if(payload!='' and int(payload) > 0):#charging
+            if(payload!='' and int(payload) > 0): #charging, include current in message
                 data["current"] = payload
             else:
+                data["current"] = 0
                 del data["current"]
         elif topic_postfix == "charger_voltage":
-            if(payload!='' and int(payload) > 5):
+            if(payload!='' and int(payload) > 5): #charging, include voltage in message
                 data["voltage"] = payload
             else:
+                data["voltage"] = 0
                 del data["voltage"]
         elif topic_postfix == "shift_state":
             if payload == "P":
@@ -191,9 +193,9 @@ def on_message(client, userdata, message):
         elif topic_postfix == "charge_energy_added":
             data["kwh_charged"] = payload
         elif topic_postfix == "inside_temp":
-            a=0#noop
+            a=0 #Volontarely ignored
         elif topic_postfix == "since":
-            a=0#noop
+            a=0 #Volontarely ignored
         else:
             pass
             #print("Unneeded topic:", message.topic, payload)
@@ -257,14 +259,14 @@ def updateABRP():
 i = -1
 while True:
     i+=1
-    sleep(5)#refresh rate of min 5 seconds
+    sleep(5) #refresh rate of min 5 seconds
     #print(state)
     if state != prev_state:
         i = 120
     current_datetime = datetime.datetime.utcnow()
     current_timetuple = current_datetime.utctimetuple()
-    data["utc"] = calendar.timegm(current_timetuple)#utc timestamp must be in every message
-    if(state == "parked" or state == "online" or state == "suspended" or state=="asleep" or state=="offline"):#if parked update every 10min
+    data["utc"] = calendar.timegm(current_timetuple) #utc timestamp must be in every message
+    if(state == "parked" or state == "online" or state == "suspended" or state=="asleep" or state=="offline"): #if parked update every 10min
         if "kwh_charged" in data:
             del data["kwh_charged"]
         if(i%120==0 or i>120):
