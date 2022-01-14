@@ -259,32 +259,32 @@ def updateABRP():
 i = -1
 while True:
     i+=1
-    sleep(5) #refresh rate of min 5 seconds
+    sleep(1) #refresh rate of 1 cycle per second
     #print(state)
     if state != prev_state:
-        i = 120
+        i = 30
     current_datetime = datetime.datetime.utcnow()
     current_timetuple = current_datetime.utctimetuple()
     data["utc"] = calendar.timegm(current_timetuple) #utc timestamp must be in every message
-    if(state == "parked" or state == "online" or state == "suspended" or state=="asleep" or state=="offline"): #if parked update every 10min
+    if(state == "parked" or state == "online" or state == "suspended" or state=="asleep" or state=="offline"): #if parked, update every 30 cylces/seconds
         if "kwh_charged" in data:
             del data["kwh_charged"]
-        if(i%120==0 or i>120):
-            print("parked, updating every 10min")
-            print(data)
+        if(i%30==0 or i>30):
+            print("Car is parked, updating every 30s.")
+            print("Data object sent: "+data)
             updateABRP()
             i = 0
-    elif state == "charging":
+    elif state == "charging": #if charging, update every 6 cycles/seconds
         if i%6==0:
-            print("charging, updating every 30s")
-            print(data)
+            print("Car is charging, updating every 6s.")
+            print("Data object sent: "+data)
             updateABRP()
-    elif state == "driving":
-        print("driving, updating every 5s")
-        print(data)
+    elif state == "driving": #if driving, update every cycle/second
+        print("Car is driving, updating every second.")
+        print("Data object sent: "+data)
         updateABRP()
     else:
-        print("unknown state, not updating abrp")
+        print("Car in unknown state, not sending any update to ABRP.")
         print(state)
     prev_state = state
 
