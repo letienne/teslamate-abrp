@@ -35,4 +35,4 @@ jobs:
           docker buildx build \
           --push \
           --tag ${{ secrets.DOCKER_USERNAME }}/teslamate-abrp:latest \
-          --platform linux/amd64,linux/arm64 . 
+          --platform linux/amd64,linux/arm64,linux/arm/v7 . 
