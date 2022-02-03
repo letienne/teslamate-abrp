@@ -18,6 +18,7 @@ In your TeslaMate docker-compose.yml, add the teslamate-abrp service by adding t
   ABRP:
     container_name: TeslaMate_ABRP
     image: fetzu/teslamate-abrp:latest
+    restart: always
     environment:
       - MQTT_SERVER=mosquitto
       - USER_TOKEN=y0ur-4p1-k3y
