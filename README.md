@@ -2,17 +2,20 @@
 [![amd64+arm64 build](https://github.com/fetzu/teslamate-abrp/actions/workflows/build.yml/badge.svg)](https://github.com/fetzu/teslamate-abrp/actions/workflows/build.yml)
 [![](https://img.shields.io/docker/image-size/fetzu/teslamate-abrp/latest)](https://hub.docker.com/r/fetzu/teslamate-abrp)
 [![](https://img.shields.io/docker/pulls/fetzu/teslamate-abrp?color=%23099cec)](https://hub.docker.com/r/fetzu/teslamate-abrp)
+[![GitHub license](https://img.shields.io/github/license/fetzu/teslamate-abrp)](https://github.com/fetzu/teslamate-abrp/blob/main/LICENSE)
   
-A slightly convoluted way of getting your vehicule data from [TeslaMate](https://github.com/adriankumpf/teslamate) to [ABRP](https://abetterrouteplanner.com/).
+A slightly convoluted way of getting your vehicle data from [TeslaMate](https://github.com/adriankumpf/teslamate) to [ABRP](https://abetterrouteplanner.com/).
 
-## Use as Docker container
-### Requirements
+
+## Setup and Usage
+### 1. Use as Docker container
+#### 1.1 Requirements
 For this to work, you need a working instance of TeslaMate with MQTT enabled. See the [official TeslaMate doc](https://docs.teslamate.org/docs/installation/docker) as a reference on how this might look like.
 
-### Getting an USER TOKEN from ABRP
+#### 1.2 Getting a USER TOKEN from ABRP
 Inside the ABRP (web)app, navigate to your car settings and use the "generic" card (last one at the very bottom) to generate your user token. Make a note of that token and keep it to yourself.
 
-### Adding the service to docker-compose.yml
+#### 1.3 Adding the service to docker-compose.yml
 In your TeslaMate docker-compose.yml, add the teslamate-abrp service by adding the following lines in the "services:" section:
 ```
   ABRP:
@@ -26,7 +29,7 @@ In your TeslaMate docker-compose.yml, add the teslamate-abrp service by adding t
       - CAR_MODEL=s100d [NOTE: This is optional, see below]
 ```
   
-Make sure to adapt the following environment varibles:
+Make sure to adapt the following environment variables:
 - The first value MQTT_SERVER corresponds to the name of your MQTT service name ("mosquitto" in the doc).  
 - The second values (USER_TOKEN) correspond to the value provided by ABRP.
 - The third value corresponds to your car number (1 if you only have a single car).
@@ -41,16 +44,16 @@ docker-compose up ABRP -d
   
 If all goes well, your car should be shown as online in ABRP after a minute. The logs should  show "Connected with result code 0".
 
-## Use as python script
+### 2. Use as python script
 The script can also be run directly on a machine with Python 3.x. Please note that the machine needs to have access to your MQTT server on port 1883.
 
-### Installing requirements
+#### 2.1 Installing requirements
 To install the requirements, run
 ```
 pip install -r requirements.txt
 ```
 
-### Running
+#### 2.2 Running
 
 To run, you can either use the CLI. Please note that USER_TOKEN, CAR_NUMBER, CAR_MODEL and MQTT_SERVER are required arguments.  
   
@@ -78,3 +81,13 @@ If you are using a MQTT server with username or authentication, pass the -l (to 
     All arguments can also be passed as corresponding OS environment variables.
 ```
 **Note: All arguments can also be passed as corresponding OS environment variables.** Arguments passed through the CLI will always supersede OS environment variables.
+
+
+## Credits
+
+Based on/forked from [letienne's original code](https://github.com/letienne/teslamate-abrp), with improvement by various contributors (see [commit history](https://github.com/fetzu/teslamate-abrp/commits/main)).
+
+
+## License
+
+Licensed under the [MIT license](https://github.com/fetzu/teslamate-abrp/blob/main/LICENSE).
